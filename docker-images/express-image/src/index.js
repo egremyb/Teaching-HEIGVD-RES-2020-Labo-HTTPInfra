@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 
 app.get('/', function (req, res) {
-    res.send(generateAnimals);
+    res.send(generateAnimals());
 });
 
 app.listen(3000, function () {
@@ -35,7 +35,7 @@ function generateAnimals() {
 
         var battleCry = "";
 
-        for (var i = 0; i < syllables; i++){
+        for (var j = 0; j < syllables; j++){
             battleCry += chance.syllable();
         }
 
