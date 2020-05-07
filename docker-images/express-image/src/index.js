@@ -39,6 +39,8 @@ function generateAnimals() {
             battleCry += chance.syllable();
         }
 
+        battleCry += battleCry;
+
         animals.push({
             specie: animal,
             weight: weight,
