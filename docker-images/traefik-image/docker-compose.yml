@@ -1,0 +1,32 @@
+version: "3"
+
+networks:
+  res_http_lab_network:
+    external: true
+  internal:
+    external: false
+
+services:
+  blog:
+    image: res/apache_php
+    labels:
+      - traefik.backend=blog
+      - traefik.frontend.rule=Host:labo.res.ch
+      - traefik.docker.network=res_http_lab_network
+      - traefik.port=80
+    networks:
+      - internal
+      - res_http_lab_network
+    depends_on:
+      - express_animals
+
+  express_animals:
+    image: res/express_animals
+    networks:
+      - internal
+      - res_http_lab_network
+    labels:
+      - traefik.backend=express_animals
+      - traefik.frontend.rule=Host:labo.res.ch/api/animals
+      - traefik.docker.network=res_http_lab_network
+      - traefik.port=80

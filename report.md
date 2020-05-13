@@ -31,8 +31,9 @@ The last line let us copy our website template from the _src_ directory into the
 The template used here is [The Town](https://templatemo.com/tm-525-the-town) from [templatemo](https://templatemo.com).
 
 ### Customizing the template
------------------------- TODO ------------------------
-Add final modification at the end of the lab
+------------------------ TODO ------------------------  
+Necessary ??????????  
+Add final modification at the end of the lab  
 ------------------------ TODO ------------------------
 
 
@@ -53,5 +54,15 @@ CMD ["node", "/opt/app/index.js"]
 The first line shows which base image is used, the official node 12.16.3 image in this case.
 ## Apache reverse proxy
 ### Docker image creation
+```
+FROM php:7.2-apache
 
+RUN apt-get update && \
+    apt-get install -y vim
+
+COPY conf/ /etc/apache2
+
+RUN a2enmod proxy proxy_http
+RUN a2ensite 000-* 001-*
+```
 ## JQuery requests
