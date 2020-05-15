@@ -8,7 +8,7 @@ app.get('/', function (req, res) {
     res.send(generateAnimals());
 });
 
-app.listen(3000, function () {
+app.listen(80, function () {
     console.log("Dang an HTTP request ! You're such a " + chance.animal());
 });
 
