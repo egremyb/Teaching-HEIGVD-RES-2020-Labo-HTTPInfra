@@ -4,8 +4,13 @@ var chance = new Chance();
 const express = require('express');
 const app = express();
 
+const srvState = chance.state({ full: true });
+
 app.get('/', function (req, res) {
-    res.send(generateAnimals());
+    res.send({
+        animals: generateAnimals(),
+        srvState: srvState
+    });
 });
 
 app.listen(80, function () {
@@ -21,7 +26,7 @@ function generateAnimals() {
     console.log(numberOfAnimals);
 
     var animals = [];
-    for (var i = 0; i < numberOfAnimals; i++){
+    for (var i = 0; i < numberOfAnimals; i++) {
         var animal = chance.animal();
         var weight = chance.floating({
             min: 0.01,
@@ -35,7 +40,7 @@ function generateAnimals() {
 
         var battleCry = "";
 
-        for (var j = 0; j < syllables; j++){
+        for (var j = 0; j < syllables; j++) {
             battleCry += chance.syllable();
         }
 
@@ -52,4 +57,3 @@ function generateAnimals() {
 
     return animals;
 }
-
