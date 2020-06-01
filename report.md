@@ -549,36 +549,34 @@ To use sticky sessions, we need to add 3 new traefik labels to the service that 
 - "traefik.http.services.<service name>.loadbalancer.sticky.cookie.name=StickyCookie"
 - "traefik.http.services.<service name>.loadbalancer.sticky.cookie.httpOnly=true"
 ```
-With those labels we enable sticky session in load balancing to traefik service with a cookie when there is an http request.
+With those labels we enable sticky sessions in Traefik load balancing using a cookie named `StickyCookie`. This is only available for http traffic.
 
 ### Direct sticky session
-When we access the express service the stickyCookie is created and  contained the ip address of the express container we have contacted.
+When we access the express service the stickyCookie is created and  contained the ip address of the express container we have reached.
 
 ![](img/stickyCookie.png)
 
-Then if we refresh the page we see that the _srvState_ field, used to identify a express server, always as the same value due to the sticky sesssion.
+Then if we refresh the page, we see that the _srvState_ field, use to identify an express server, always has the same value due to the sticky session.
 
 ![](img/express_animals_sticky_1.png)
 
 ![](img/express_animals_sticky_2.png)
 
-And the list continue, you have our words ;)
+In this example, due to the sticky session cookie, each animals array will be handed by the same `Minnesota` server, even though the array content changes with each request.
 
 ### Forwarded sticky session
-When we access the apache_php website a stickyCookie is also created for the express animals requests.
+When we access the apache_php website, a stickyCookie is also created for the express animals request.
 
 ![](img/stickyCookie.png)
 
-Due to this we always request the same express service.
+Due to this, we always request the same express service.
 
 ![](img/forwarded_express_animals_sticky_1.png)
 
 ![](img/forwarded_express_animals_sticky_2.png)
 
-And the list continue, you have our words ;)
-
 ## Management UI
-We choose to use `Portainer` for the management of the UI. This service provide a lot of functionalities to manage a docker environment.
+We choose to use `Portainer` for the management UI. This service provide a lot of functionalities to manage a docker environment.
 ### Docker-compose
 To use _portainer_ we need to add the following service to our _docker-compose.yml_ file.
 ```
@@ -593,7 +591,7 @@ portainer:
   labels:
     - "traefik.enable=true"
 ```
-Some explanation on the service config :
+Some explanations on the service config :
 ```
 image: portainer/portainer
 ```
@@ -606,39 +604,39 @@ Then, we specify that we want the service to restart automatically.
 ports:
       - 9000:9000
 ```
-The ports 9080 will be exposed on the portainer container.
+The port 9000 will be exposed on the portainer container.
 
 ```
 volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 ```
-The future container will need some files to work properly. Copy file dependency.
+The future container will need to access the docker socket, like traefik does, to manage the containers.
 ### Validation procedure
 The management UI will be validated with the next chapter on the `Dynamic cluster management`.
 ## Dynamic cluster management
-Traefik handle himself the dynamic cluster management.
+Traefik handle the dynamic cluster management himself.
 ### Validation procedure
-To test if traefik work, we will use portainer to alter traefik cluster. We first need to execute docker-compose and scale the number of container.
+To test if traefik works, we will use portainer to alter traefik's cluster. We first need to execute docker-compose and scale the number of services.
 ```
 docker-compose up --scale apache_php=2 --scale express_animals=2 -d
 ```
-Then we check the status of our services from traefik dashboard.
+Then we check the status of our services from the traefik dashboard.
 
 ![](img/traefik_services.png)
 
 We have 6 services and some servers redundancy for _apache_php_ and _express_animals_ services.
 
-Then we will kill one apache_php and two express_animals with portainer.
+Then we will kill one apache_php and two express_animals using portainer.
 
 ![](img/portainer_before_alterating.png)
 
 ![](img/portainer_after_alterating.png)
 
-We go back to traefik dashboard to see the status of the services.
+As we go back to traefik dashboard to see the status of the services.
 
 ![](img/traefik_services_after_partial_kill.png)
 
-Traefik did detect the kill of the three containers.
+We can see that traefik did detect the extinction of the three containers.
 
 Let's run a new express_animals service.
 ```
@@ -647,4 +645,4 @@ docker-compose run express_animals
 
  ![](img/traefik_services_after_run.png)
 
- Traefik did detect the new express service.
+ Here again Traefik did detect the new express service.
