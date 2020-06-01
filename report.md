@@ -19,10 +19,7 @@ The file tree is the following.
 │   │       ├── img
 │   │       ├── index.php
 │   │       ├── js
-│   │       │   ├── animals.js
-│   │       │   ├── bootstrap.min.js
-│   │       │   ├── jquery-1.9.1.min.js
-│   │       │   └── jquery.singlePageNav.min.js
+│   │       │   └── animals.js
 │   │       ├── magnific-popup
 │   │       └── slick
 │   ├── apache-reverse-proxy-image
@@ -41,11 +38,17 @@ The file tree is the following.
 │   └── traefik-image
 │       ├── conf
 │       │   └── traefik.toml
-│       ├── docker-compose.yml
-│       └── traefik_run.sh
-└─── report.md
+│       └── docker-compose.yml
+├─── report.md
+└─── infrastructure_run.sh
 ```
-**--- TODO: explain the file tree ---**
+All Dockerfiles and their sources are in the _docker-images_ directory.
+
+There are two scripts at the root of the repository to easily build all images ( `build_all_images.sh` ) and to run the final infrastructure ( `infrastructure_run.sh` ) with :
+- 1 traefik reverse proxy.
+- 2 apache-php servers
+- 2 express animals servers.
+- 1 portainer management UI.
 
 ## Apache-PHP server
 ### Docker image creation
