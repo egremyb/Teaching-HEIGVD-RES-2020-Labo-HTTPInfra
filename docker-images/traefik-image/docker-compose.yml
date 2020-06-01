@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 networks:
   res_http_lab_network:
@@ -7,26 +7,56 @@ networks:
     external: false
 
 services:
-  blog:
+  reverse-proxy:
+    image: traefik:v2.2
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./conf/traefik.toml:/traefik.toml:ro
+    networks:
+      - internal
+      - res_http_lab_network
+      
+  express_animals:
+    image: res/express_animals
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.router-express_animals.rule=Path(`/api/animals/`)"
+      - "traefik.http.routers.router-express_animals.service=express-animals-traefik-image"
+      - "traefik.http.routers.router-express_animals.middlewares=strip_prefix"
+      - "traefik.http.middlewares.strip_prefix.stripprefix.prefixes=/api/animals/"
+      - "traefik.http.services.express-animals-traefik-image.loadbalancer.sticky=true"
+      - "traefik.http.services.express-animals-traefik-image.loadbalancer.sticky.cookie.name=StickyCookie"
+      - "traefik.http.services.express-animals-traefik-image.loadbalancer.sticky.cookie.httpOnly=true"
+    networks:
+      - internal
+      - res_http_lab_network
+      
+  apache_php:
     image: res/apache_php
     labels:
-      - traefik.backend=blog
-      - traefik.frontend.rule=Host:labo.res.ch
-      - traefik.docker.network=res_http_lab_network
-      - traefik.port=80
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.http.routers.router-apache_php.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.router-apache_php.service=apache-php-traefik-image"
     networks:
       - internal
       - res_http_lab_network
     depends_on:
       - express_animals
-
-  express_animals:
-    image: res/express_animals
-    networks:
-      - internal
-      - res_http_lab_network
+  portainer:
+    image: portainer/portainer
+    restart: always
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      - traefik.backend=express_animals
-      - traefik.frontend.rule=Host:labo.res.ch/api/animals
-      - traefik.docker.network=res_http_lab_network
-      - traefik.port=80
+      - "traefik.enable=true"
